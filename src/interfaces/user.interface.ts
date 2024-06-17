@@ -1,20 +1,15 @@
 import { User } from "@prisma/client";
 import {
   UserCreateInputSchema,
-  UserSchema,
   UserUpdateInputSchema,
 } from "../../prisma/generated/zod";
 import { z } from "zod";
-
-export type SerializeModel<T> = Omit<T, "createdAt" | "updatedAt">;
-
-export type UserSchema = z.infer<SerializeModel<typeof UserSchema>>;
 
 export const UserCreateSchema = UserCreateInputSchema;
 export type UserCreate = z.infer<typeof UserCreateSchema>;
 
 export const UserUpdateSchema = UserUpdateInputSchema;
-export type UserUpdate = z.infer<SerializeModel<typeof UserUpdateSchema>> & {
+export type UserUpdate = z.infer<typeof UserUpdateSchema> & {
   id: number;
 };
 

@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyRequest } from "fastify";
 import { UserUseCase } from "../usecases/user.usecases";
 import {
   UserCreate,
@@ -9,120 +9,78 @@ import {
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { UserSchema } from "../../prisma/generated/zod";
 import { z } from "zod";
+import { UserRepositoryPrisma } from "../repositories/user.repository";
+import { UserService } from "../modules/user/user.service";
+import { UserController } from "../modules/user/user.controller";
 
 export async function userRoutes(fastify: FastifyInstance) {
   fastify.withTypeProvider<ZodTypeProvider>();
 
-  const userUseCase = new UserUseCase();
+  const userRepository = new UserRepositoryPrisma();
+  const userService = new UserService(userRepository);
+  const userController = new UserController(userService);
 
-  fastify.post<{ Body: UserCreate }>(
+  fastify.post(
     "/",
-    { schema: { body: UserCreateSchema, tags: ["Users"] } },
-    async (req, res) => {
-      const { email, name } = req.body;
-
-      try {
-        const data = await userUseCase.create({ email, name });
-
-        res.send(data);
-      } catch (error) {
-        res.send(error);
-      }
-    }
+    {
+      schema: {
+        tags: ["Users"],
+        body: UserCreateSchema,
+        response: { 200: UserSchema },
+      },
+    },
+    async (req: FastifyRequest<{ Body: UserCreate }>, reply) =>
+      userController.createUser(req, reply)
   );
 
   fastify.get(
     "/",
     {
       schema: {
-        response: {
-          200: z.array(UserSchema),
-        },
         tags: ["Users"],
+        response: { 200: z.array(UserSchema) },
       },
     },
-    async (req, res) => {
-      try {
-        const data = await userUseCase.getAllUsers();
-
-        res.send(data);
-      } catch (error) {
-        res.send(error);
-      }
-    }
+    async (req: FastifyRequest, reply) => userController.getAllUsers(req, reply)
   );
 
-  fastify.get<{ Params: { id: Number } }>(
+  fastify.get(
     "/:id",
     {
       schema: {
-        response: {
-          200: UserSchema,
-        },
         tags: ["Users"],
-      },
-    },
-    async (req, res) => {
-      const { id } = req.params;
-
-      try {
-        const data = await userUseCase.findOneUser(Number(id));
-
-        res.send(data);
-      } catch (error) {
-        res.send(error);
-      }
-    }
-  );
-
-  fastify.patch<{ Body: UserUpdate; Params: { id: number } }>(
-    "/:id",
-    {
-      schema: {
-        body: UserUpdateSchema,
         response: { 200: UserSchema },
-        tags: ["Users"],
       },
     },
-    async (req, res) => {
-      try {
-        const { id } = req.params;
-        const { name, email } = req.body;
-
-        const data = await userUseCase.updateUser({
-          email,
-          name,
-          id: Number(id),
-        });
-
-        return data;
-      } catch (error) {
-        res.send(error);
-      }
-    }
+    async (req: FastifyRequest<{ Params: { id: number } }>, reply) =>
+      userController.getOneUser(req, reply)
   );
 
-  fastify.delete<{ Params: { id: Number } }>(
+  fastify.patch(
     "/:id",
     {
       schema: {
-        response: {
-          200: UserSchema,
-        },
         tags: ["Users"],
+        body: UserCreateSchema,
+        response: { 200: UserSchema },
       },
     },
-    async (req, res) => {
-      const { id } = req.params;
+    async (
+      req: FastifyRequest<{ Body: UserCreate; Params: { id: number } }>,
+      reply
+    ) => userController.updateUser(req, reply)
+  );
 
-      try {
-        const data = await userUseCase.deleteUser(Number(id));
-
-        res.send(data);
-      } catch (error) {
-        res.send(error);
-      }
-    }
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["Users"],
+        response: { 200: UserSchema },
+      },
+    },
+    async (req: FastifyRequest<{ Params: { id: number } }>, reply) =>
+      userController.deleteUser(req, reply)
   );
 }
 

@@ -11,11 +11,13 @@ class UserRepositoryPrisma implements UserRepository {
     const result = await prisma.user.create({
       data: { email: data.email, name: data.name },
     });
+
     return result;
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
     const result = await prisma.user.findFirst({ where: { email } });
+
     return result || null;
   }
 
@@ -41,6 +43,7 @@ class UserRepositoryPrisma implements UserRepository {
 
   async deleteUser(id: number) {
     const result = await prisma.user.delete({ where: { id } });
+
     return result || null;
   }
 }

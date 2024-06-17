@@ -2,14 +2,18 @@
   "name": "crud-fastify",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "license": "MIT",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "migrate": "prisma migrate dev & prisma generate"
+    "migrate": "prisma migrate dev & prisma generate",
+    "test": "jest"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
     "prisma": "^5.15.0",
+    "ts-jest": "^29.1.5",
     "tsx": "^4.15.4",
     "typescript": "^5.4.5"
   },
@@ -20,6 +24,8 @@
     "@prisma/client": "^5.15.0",
     "fastify": "^4.27.0",
     "fastify-type-provider-zod": "^1.2.0",
+    "ts-node": "^10.9.2",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8",
     "zod-prisma-types": "^3.1.8"
   }

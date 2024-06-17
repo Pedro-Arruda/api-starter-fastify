@@ -1,3 +1,3 @@
-☐ Correct type for post (createdAt and updatedAt)
+☐ Correct type for post (remove createdAt and updatedAt)
 ☐ Implement auth
 ☐ Implement tests
