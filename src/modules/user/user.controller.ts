@@ -17,7 +17,7 @@ class UserController {
     try {
       const data = await this.userService.create({ email, name });
 
-      reply.send(data);
+      reply.status(201).send(data);
     } catch (error) {
       reply.send(error);
     }

@@ -10,7 +10,7 @@ import {
 } from "fastify-type-provider-zod";
 import userRoutes from "./routes/user.routes";
 
-const app = fastify().withTypeProvider<ZodTypeProvider>();
+export const app = fastify().withTypeProvider<ZodTypeProvider>();
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 

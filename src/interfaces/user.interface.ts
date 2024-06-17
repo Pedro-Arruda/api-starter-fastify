@@ -19,5 +19,5 @@ export interface UserRepository {
   findUserById(id: number): Promise<User | null>;
   findUserByEmail(email: string): Promise<User | null>;
   updateUser(data: UserUpdate): Promise<User>;
-  deleteUser(id: number): Promise<User | null>;
+  deleteUser(id: number | null): Promise<User | null>;
 }

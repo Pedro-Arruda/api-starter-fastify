@@ -1,24 +1,12 @@
-import { FastifyInstance, FastifyRequest } from "fastify";
-import { UserUseCase } from "../usecases/user.usecases";
-import {
-  UserCreate,
-  UserCreateSchema,
-  UserUpdate,
-  UserUpdateSchema,
-} from "../interfaces/user.interface";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { UserSchema } from "../../prisma/generated/zod";
 import { z } from "zod";
-import { UserRepositoryPrisma } from "../repositories/user.repository";
-import { UserService } from "../modules/user/user.service";
-import { UserController } from "../modules/user/user.controller";
+import { FastifyInstance, FastifyRequest } from "fastify";
+import { UserSchema } from "../../prisma/generated/zod";
+import { userFactory } from "../modules/user/user.factory";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { UserCreate, UserCreateSchema } from "../interfaces/user.interface";
 
 export async function userRoutes(fastify: FastifyInstance) {
   fastify.withTypeProvider<ZodTypeProvider>();
-
-  const userRepository = new UserRepositoryPrisma();
-  const userService = new UserService(userRepository);
-  const userController = new UserController(userService);
 
   fastify.post(
     "/",
@@ -30,7 +18,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       },
     },
     async (req: FastifyRequest<{ Body: UserCreate }>, reply) =>
-      userController.createUser(req, reply)
+      userFactory().createUser(req, reply)
   );
 
   fastify.get(
@@ -41,7 +29,7 @@ export async function userRoutes(fastify: FastifyInstance) {
         response: { 200: z.array(UserSchema) },
       },
     },
-    async (req: FastifyRequest, reply) => userController.getAllUsers(req, reply)
+    async (req: FastifyRequest, reply) => userFactory().getAllUsers(req, reply)
   );
 
   fastify.get(
@@ -53,7 +41,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       },
     },
     async (req: FastifyRequest<{ Params: { id: number } }>, reply) =>
-      userController.getOneUser(req, reply)
+      userFactory().getOneUser(req, reply)
   );
 
   fastify.patch(
@@ -68,7 +56,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     async (
       req: FastifyRequest<{ Body: UserCreate; Params: { id: number } }>,
       reply
-    ) => userController.updateUser(req, reply)
+    ) => userFactory().updateUser(req, reply)
   );
 
   fastify.delete(
@@ -80,7 +68,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       },
     },
     async (req: FastifyRequest<{ Params: { id: number } }>, reply) =>
-      userController.deleteUser(req, reply)
+      userFactory().deleteUser(req, reply)
   );
 }
 

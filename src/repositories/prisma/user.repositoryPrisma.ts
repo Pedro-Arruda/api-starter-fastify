@@ -1,10 +1,10 @@
 import { User } from "@prisma/client";
-import { prisma } from "../database/prisma-client";
 import {
   UserCreate,
   UserRepository,
   UserUpdate,
-} from "../interfaces/user.interface";
+} from "../../interfaces/user.interface";
+import { prisma } from "../../database/prisma-client";
 
 class UserRepositoryPrisma implements UserRepository {
   async create(data: UserCreate): Promise<User> {
