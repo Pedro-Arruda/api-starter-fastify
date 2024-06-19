@@ -4,9 +4,11 @@ import { UserSchema } from "../../prisma/generated/zod";
 import { userFactory } from "../modules/user/user.factory";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { UserCreate, UserCreateSchema } from "../interfaces/user.interface";
+import { auth } from "../middlewares/auth";
 
 export async function userRoutes(fastify: FastifyInstance) {
   fastify.withTypeProvider<ZodTypeProvider>();
+  fastify.addHook("onRequest", auth);
 
   fastify.post(
     "/",
@@ -15,6 +17,7 @@ export async function userRoutes(fastify: FastifyInstance) {
         tags: ["Users"],
         body: UserCreateSchema,
         response: { 200: UserSchema },
+        security: [{ bearerAuth: [] }],
       },
     },
     async (req: FastifyRequest<{ Body: UserCreate }>, reply) =>
@@ -27,6 +30,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Users"],
         response: { 200: z.array(UserSchema) },
+        security: [{ bearerAuth: [] }],
       },
     },
     async (req: FastifyRequest, reply) => userFactory().getAllUsers(req, reply)
@@ -38,6 +42,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Users"],
         response: { 200: UserSchema },
+        security: [{ bearerAuth: [] }],
       },
     },
     async (req: FastifyRequest<{ Params: { id: number } }>, reply) =>
@@ -51,6 +56,7 @@ export async function userRoutes(fastify: FastifyInstance) {
         tags: ["Users"],
         body: UserCreateSchema,
         response: { 200: UserSchema },
+        security: [{ bearerAuth: [] }],
       },
     },
     async (
@@ -65,6 +71,7 @@ export async function userRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Users"],
         response: { 200: UserSchema },
+        security: [{ bearerAuth: [] }],
       },
     },
     async (req: FastifyRequest<{ Params: { id: number } }>, reply) =>

@@ -12,10 +12,10 @@ class UserController {
     req: FastifyRequest<{ Body: UserCreate }>,
     reply: FastifyReply
   ): Promise<void> {
-    const { email, name } = req.body;
+    const { email, name, password } = req.body;
 
     try {
-      const data = await this.userService.create({ email, name });
+      const data = await this.userService.create({ email, name, password });
 
       reply.status(201).send(data);
     } catch (error) {

@@ -4,6 +4,7 @@ import {
   UserRepository,
   UserUpdate,
 } from "../../interfaces/user.interface";
+import { hash } from "bcryptjs";
 
 class UserService {
   private userRepository: UserRepository;
@@ -12,12 +13,18 @@ class UserService {
     this.userRepository = userRepository;
   }
 
-  async create({ name, email }: UserCreate): Promise<User> {
+  async create({ name, email, password }: UserCreate): Promise<User> {
     const verifyIfUserExists = await this.userRepository.findUserByEmail(email);
 
     if (verifyIfUserExists) throw new Error("User already exists");
 
-    const result = await this.userRepository.create({ email, name });
+    const passwordHash = await hash(password, 8);
+
+    const result = await this.userRepository.create({
+      email,
+      name,
+      password: passwordHash,
+    });
 
     return result;
   }

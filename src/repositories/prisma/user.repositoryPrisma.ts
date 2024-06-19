@@ -7,9 +7,9 @@ import {
 import { prisma } from "../../database/prisma-client";
 
 class UserRepositoryPrisma implements UserRepository {
-  async create(data: UserCreate): Promise<User> {
+  async create({ email, name, password }: UserCreate): Promise<User> {
     const result = await prisma.user.create({
-      data: { email: data.email, name: data.name },
+      data: { email, name, password },
     });
 
     return result;

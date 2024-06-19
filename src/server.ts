@@ -9,6 +9,7 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 import userRoutes from "./routes/user.routes";
+import authRoutes from "./routes/auth.routes";
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>();
 app.setValidatorCompiler(validatorCompiler);
@@ -22,6 +23,15 @@ app.register(fastifySwagger, {
       version: "1.0.0",
     },
     servers: [],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
   transform: jsonSchemaTransform,
 });
@@ -32,6 +42,7 @@ app.register(fastifySwaggerUI, {
 
 app
   .withTypeProvider<ZodTypeProvider>()
+  .register(authRoutes, { prefix: "/auth" })
   .register(userRoutes, { prefix: "/users" });
 
 async function run() {
